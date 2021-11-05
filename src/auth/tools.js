@@ -3,7 +3,7 @@ import createHttpError from "http-errors"
 import UserModel from "../services/users/schema.js"
 
 export const JWTAuthenticate = async user => {
-    const accessToken = await generateJWT({ _id: user._id })
+    const accessToken = await generateJWT({ _id: user.id_id })
     const refreshToken = await generateRefreshJWT({ _id: user._id })
 
     user.refreshToken = refreshToken
@@ -14,7 +14,7 @@ export const JWTAuthenticate = async user => {
 
 export const generateJWT = payload =>
     new Promise((resolve, reject) =>
-        jwt.sign(payload, process.env.JWT_SECRET, { expireIn: "1h" }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1 week" }, (err, token) => {
             if (err) reject(err)
             resolve(token)
         }))
@@ -27,7 +27,7 @@ export const verifyJWT = token => new promise((resolve, reject) => {
 
 const generateRefreshJWT = payload =>
     new Promise((resolve, reject) =>
-        jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expireIn: "1h" }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "1 week" }, (err, token) => {
             if (err) reject(err)
             else resolve(token)
         })

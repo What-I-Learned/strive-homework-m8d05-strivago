@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+
 import listEndpoints from "express-list-endpoints";
 import userRouter from "./services/users/index.js";
+
 
 import {
   notFoundHandler,
@@ -42,8 +44,6 @@ server.use(genericErrorHandler);
 
 server.listen(PORT, () => {
   // connect to mongoose Server
-
-
 
   mongoose.connect(process.env.MONGODB, {});
 

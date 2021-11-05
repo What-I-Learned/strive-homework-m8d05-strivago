@@ -12,9 +12,11 @@ import {
 import accomodationRouter from "./services/accomodation/index.js";
 
 const server = express();
-const { PORT = 5000 } = process.env;
 
-// MIDDLEWARES
+const { PORT = 3009 } = process.env;
+
+
+// MIDDLEWARE
 
 server.use(cors());
 server.use(express.json());
@@ -31,10 +33,10 @@ server.use(genericErrorHandler);
 
 server.listen(PORT, async () => {
   // connect to mongoose Server
-  mongoose.connect(process.env.MONGODB, {});
+  // mongoose.connect(process.env.MONGODB, {});
   console.log(`Server is listening on port ${PORT}`);
 });
 
 server.on("error", (error) => {
-  console.log("Server is stoppped ", error);
+  console.log("Server is stopped ", error);
 });

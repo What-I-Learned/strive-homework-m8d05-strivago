@@ -1,9 +1,10 @@
 import express from "express";
 import AccomodationModel from "./schema.js";
 import { hostOnlyMiddleware } from "../../auth/host.js"
+import { JWTAuthMiddleware } from "../../auth/token.js"
 const accomodationRouter = express.Router();
 
-accomodationRouter.get("/", hostOnlyMiddleware, async (req, res, next) => {
+accomodationRouter.get("/", async (req, res, next) => {
   try {
     const accomodations = await AccomodationModel.find().populate({
       path: "host",
@@ -31,12 +32,14 @@ accomodationRouter.get("/:id", hostOnlyMiddleware, async (req, res, next) => {
 
 // HOST ONLY
 
-accomodationRouter.post("/", hostOnlyMiddleware, async (req, res, next) => {
+accomodationRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    //   req.body.host = req.user;
-    const newAccomodation = new AccomodationModel(req.body);
-    await newAccomodation.save();
-    res.status(201).send(newAccomodation);
+    console.log(req.user)
+    // req.body.host = req.user;
+    // console.log(req.user);
+    // const newAccomodation = new AccomodationModel(req.body);
+    // await newAccomodation.save();
+    // res.status(201).send(newAccomodation);
   } catch (err) {
     next(err);
   }

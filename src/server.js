@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import listEndpoints from "express-list-endpoints";
+import userRouter from "./services/users/index.js";
 
-import userRouter from "./users/index.js";
 import {
   notFoundHandler,
   badRequestHandler,
@@ -28,7 +29,7 @@ server.use("/users", userRouter)
 
 // SERVICES
 server.use("/accomodation", accomodationRouter);
-
+server.use('/user', userRouter)
 
 server.use(unauthorizedHandler);
 server.use(forbiddenHandler);
@@ -44,9 +45,10 @@ server.listen(PORT, () => {
 
 
 
-  // mongoose.connect(process.env.MONGODB, {});
+  mongoose.connect(process.env.MONGODB, {});
 
   console.log(`Server is listening on port ${PORT}`);
+  console.table(listEndpoints(server))
 });
 
 server.on("error", (error) => {

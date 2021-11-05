@@ -1,23 +1,24 @@
 import express from "express";
 import createHttpError from "http-errors";
 import UserModel from "./schema.js";
-
+import { JWTAuthenticate, verifyRefreshAndGenerateTokens } from "../../auth/tools.js"
+import { JWTAuthMiddleware } from "../../auth/token.js"
 
 const userRouter = express.Router();
 
 
 
 userRouter.post("/", async (req, res, next) => {
-    try {
-      const user = new UserModel(req.body);
-      const { _id } = await user.save();
-      res.send({ _id });
-    } catch (error) {
-      next(error);
-    }
-  });
+  try {
+    const user = new UserModel(req.body);
+    const { _id } = await user.save();
+    res.send({ _id });
+  } catch (error) {
+    next(error);
+  }
+});
 
-userRouter.get("/", async (req, res, next) => {
+userRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const users = await UserModel.find();
     res.send(users);
@@ -45,43 +46,43 @@ userRouter.get("/:userID", async (req, res, next) => {
 
 
 userRouter.post("/register", async (req, res, next) => {
-    try {
-      const user = new UserModel(req.body);
-      const { _id } = await user.save();
-      res.send({ _id });
-    } catch (error) {
-      next(error);
+  try {
+    const user = new UserModel(req.body);
+    const { _id } = await user.save();
+    res.send({ _id });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
+userRouter.post("/login", async (req, res, next) => {
+  try {
+
+    const { email, password } = req.body
+
+
+    const user = await UserModel.checkCredentials(email, password)
+
+    if (user) {
+
+      const accessToken = await JWTAuthenticate(user)
+
+
+      res.send({ accessToken })
+    } else {
+      next(createHttpError(401, "Credentials are not correct!"))
     }
-  });
-
-
-
-  userRouter.post("/login", async (req, res, next) => {
-    try {
-      
-      const { email, password } = req.body
-  
-    
-      const user = await UserModel.checkCredentials(email, password)
-  
-      if (user) {
-      
-        const accessToken = await JWTAuthenticate(user)
-  
-        
-        res.send({ accessToken })
-      } else {
-        next(createHttpError(401, "Credentials are not correct!"))
-      }
-    } catch (error) {
-      next(error)
-    }
-  })
+  } catch (error) {
+    next(error)
+  }
+})
 
 
 
 
-userRouter.put("/:userID",  async (req, res, next) => {
+userRouter.put("/:userID", async (req, res, next) => {
   try {
     const userId = req.params.userID;
     const modifiedUser = await UserModel.findByIdAndUpdate(userId, req.body, {
@@ -98,7 +99,7 @@ userRouter.put("/:userID",  async (req, res, next) => {
   }
 });
 
-userRouter.delete("/:userID",  async (req, res, next) => {
+userRouter.delete("/:userID", async (req, res, next) => {
   try {
     const userId = req.params.userID;
     const deletedUser = await UserModel.findByIdAndDelete(userId);
@@ -113,7 +114,7 @@ userRouter.delete("/:userID",  async (req, res, next) => {
   }
 });
 
-  
+
 
 
 

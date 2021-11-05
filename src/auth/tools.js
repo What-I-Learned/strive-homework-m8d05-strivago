@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import createHttpError from "http-errors"
-
+import userModel from "../services/users/schema.js"
 
 export const JWTAuthenticate = async user => {
     const accessToken = await generateJWT({ _id: user.id_id })
@@ -44,7 +44,7 @@ export const verifyRefreshAndGenerateTokens = async actualRefreshToken => {
     const decodedRefreshToken = await verifyRefreshJWT(actualRefreshToken)
 
 
-    const user = await ("add model here").findById(decodedRefreshToken._id)
+    const user = await userModel.findById(decodedRefreshToken._id)
 
     if (!user) throw createHttpError(404, "User not found")
 

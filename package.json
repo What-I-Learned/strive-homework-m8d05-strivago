@@ -1,5 +1,4 @@
 {
-
   "name": "strive-homework-m8d05-strivago",
   "version": "1.0.0",
   "description": "",
@@ -10,6 +9,7 @@
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-list-endpoints": "^6.0.0",
     "http-errors": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.1.4",
@@ -37,5 +37,4 @@
     "url": "https://github.com/What-I-Learned/strive-homework-m8d05-strivago/issues"
   },
   "homepage": "https://github.com/What-I-Learned/strive-homework-m8d05-strivago#readme"
-
 }

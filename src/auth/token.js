@@ -1,6 +1,6 @@
 import createHttpError from "http-errors"
 import { verifyJWT } from "./tools.js"
-import userModel from "../services/users/schema.js"
+import UserModel from "../services/users/schema.js"
 export const JWTAuthMiddleware = async (req, res, next) => {
 
     if (!req.headers.Authorization) {
@@ -11,7 +11,7 @@ export const JWTAuthMiddleware = async (req, res, next) => {
             const decordedToken = await verifyJWT(token)
             console.log(decordedToken)
             next()
-            const user = await userModel.findById(decordedToken.id)
+            const user = await UserModel.findById(decordedToken.id)
             if (user) {
                 req.user = user
                 next()

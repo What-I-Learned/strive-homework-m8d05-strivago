@@ -5,29 +5,31 @@ import bcrypt from 'bcrypt'
 
 
 
-const userSchema = new Schema(
+const userSchema = new Schema (
     {
-        email: { type: String, required: true },
-        password: { type: String },
+        email: {type: String, required: true},
+        password: {type: String},
         role: { type: String, default: "Guest", enum: ["Guest", "Host"] }
     },
     {
         timestamps: true,
     }
-)
-userSchema.pre("save", async function (next) {
+) 
+
+
+userSchema.pre("save", async function(next){
     const user = this
     console.log(user)
     const plainpassword = user.password
     console.log(plainpassword)
-    if (user.isModified("password")) {
+    if(user.isModified("password")){
         user.password = await bcrypt.hash(plainpassword, 10)
         console.log(user.password)
     }
     next()
 })
 
-userSchema.methods.toJSON = function () {
+userSchema.methods.toJSON = function(){
     const user = this
     const userObject = user.toObject()
     delete userObject.password
@@ -38,19 +40,17 @@ userSchema.methods.toJSON = function () {
     return userObject
 }
 userSchema.statics.checkCredentials = async function (email, plainpassword) {
-
-    const user = await this.findOne({ email })
-
-
+    
+    const user = await this.findOne({ email }) 
+  
     if (user) {
-        console.log("user find:",user)
-
-        const isMatch = await bcrypt.compare(plainpassword, user.password)
-
-        if (isMatch) return user
-        else return null
-    } else return null
+      
+      const isMatch = await bcrypt.compare(plainpassword, user.password)
+   
+      if (isMatch) return user
+      else return null 
+    } else return null 
 }
 
 
-export default model("user", userSchema)
+export default model("User", userSchema)

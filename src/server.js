@@ -11,7 +11,7 @@ import {
 } from "./errorHandlers/errorHandlers.js";
 
 const server = express();
-const { PORT = 5000 } = process.env;
+const { PORT = 5000 } = process.env.PORT;
 
 // MIDDLEWARES
 
@@ -34,3 +34,4 @@ server.listen(PORT, async () => {
 server.on("error", (error) => {
   console.log("Server is stoppped ", error);
 });
+

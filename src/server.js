@@ -9,14 +9,20 @@ import {
   forbiddenHandler,
   catchAllHandler,
 } from "./errorHandlers/errorHandlers.js";
+import accomodationRouter from "./services/accomodation/index.js";
 
 const server = express();
+
 const { PORT = 3009 } = process.env;
+
 
 // MIDDLEWARE
 
 server.use(cors());
 server.use(express.json());
+
+// SERVICES
+server.use("/accomodation", accomodationRouter);
 
 server.use(unauthorizedHandler);
 server.use(forbiddenHandler);
@@ -34,4 +40,3 @@ server.listen(PORT, async () => {
 server.on("error", (error) => {
   console.log("Server is stopped ", error);
 });
-

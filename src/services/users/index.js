@@ -114,6 +114,7 @@ userRouter.delete("/:userID", JWTAuthMiddleware, hostOnlyMiddleware, async (req,
     next(error);
   }
 });
+
 userRouter.post("/refreshToken", async (req, res, next) => {
   try {
     const { currentRefreshToken } = req.body

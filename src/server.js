@@ -11,17 +11,24 @@ import {
   forbiddenHandler,
   catchAllHandler,
 } from "./errorHandlers/errorHandlers.js";
+import accomodationRouter from "./services/accomodation/index.js";
 
 const server = express();
+
+
 const { PORT = 3009 } = process.env;
 
 
-// MIDDLEWARES
+// MIDDLEWARE
 
 server.use(cors());
 server.use(express.json());
 
 server.use("/users", userRouter)
+
+// SERVICES
+server.use("/accomodation", accomodationRouter);
+
 
 server.use(unauthorizedHandler);
 server.use(forbiddenHandler);
@@ -34,12 +41,14 @@ server.use(genericErrorHandler);
 
 server.listen(PORT, () => {
   // connect to mongoose Server
-  console.log(process.env.MONGODB)
-  mongoose.connect(process.env.MONGODB);
+
+
+
+  // mongoose.connect(process.env.MONGODB, {});
+
   console.log(`Server is listening on port ${PORT}`);
 });
 
 server.on("error", (error) => {
-  console.log("Server is stoppped ", error);
+  console.log("Server is stopped ", error);
 });
-

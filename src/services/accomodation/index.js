@@ -1,9 +1,9 @@
 import express from "express";
 import AccomodationModel from "./schema.js";
-
+import { hostOnlyMiddleware } from "../../auth/host.js"
 const accomodationRouter = express.Router();
 
-accomodationRouter.get("/", async (req, res, next) => {
+accomodationRouter.get("/", hostOnlyMiddleware, async (req, res, next) => {
   try {
     const accomodations = await AccomodationModel.find().populate({
       path: "host",
@@ -16,7 +16,7 @@ accomodationRouter.get("/", async (req, res, next) => {
   }
 });
 
-accomodationRouter.get("/:id", async (req, res, next) => {
+accomodationRouter.get("/:id", hostOnlyMiddleware, async (req, res, next) => {
   try {
     const accomodation = await AccomodationModel.findById(req.params.id);
     if (accomodation) {
@@ -31,7 +31,7 @@ accomodationRouter.get("/:id", async (req, res, next) => {
 
 // HOST ONLY
 
-accomodationRouter.post("/", async (req, res, next) => {
+accomodationRouter.post("/", hostOnlyMiddleware, async (req, res, next) => {
   try {
     //   req.body.host = req.user;
     const newAccomodation = new AccomodationModel(req.body);
@@ -42,7 +42,7 @@ accomodationRouter.post("/", async (req, res, next) => {
   }
 });
 
-accomodationRouter.put("/:id", async (req, res, next) => {
+accomodationRouter.put("/:id", hostOnlyMiddleware, async (req, res, next) => {
   try {
     const modifiedAccomodation = await AccomodationModel.findByIdAndUpdate(
       req.params.id,
@@ -55,7 +55,7 @@ accomodationRouter.put("/:id", async (req, res, next) => {
   }
 });
 
-accomodationRouter.delete("/:id", async (req, res, next) => {
+accomodationRouter.delete("/:id", hostOnlyMiddleware, async (req, res, next) => {
   try {
     await AccomodationModel.findByIdAndDelete(req.params.id);
     res.send("deleted");

@@ -3,12 +3,12 @@ import createHttpError from "http-errors";
 import UserModel from "./schema.js";
 import { JWTAuthenticate, verifyRefreshAndGenerateTokens } from "../../auth/tools.js"
 import { JWTAuthMiddleware } from "../../auth/token.js"
-
+import { hostOnlyMiddleware } from "../../auth/host.js"
 const userRouter = express.Router();
 
 
 
-userRouter.post("/", async (req, res, next) => {
+userRouter.post("/", hostOnlyMiddleware, async (req, res, next) => {
   try {
     const user = new UserModel(req.body);
     const { _id } = await user.save();
@@ -27,7 +27,7 @@ userRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
   }
 });
 
-userRouter.get("/:userID", async (req, res, next) => {
+userRouter.get("/:userID", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const userId = req.params.userID;
     const user = await UserModel.findById(userId);
@@ -70,7 +70,7 @@ userRouter.post("/login", async (req, res, next) => {
       const accessToken = await JWTAuthenticate(user)
 
 
-      res.send({ accessToken })
+      res.send({ accessToken, refreshToken })
     } else {
       next(createHttpError(401, "Credentials are not correct!"))
     }
@@ -82,7 +82,7 @@ userRouter.post("/login", async (req, res, next) => {
 
 
 
-userRouter.put("/:userID", async (req, res, next) => {
+userRouter.put("/:userID", JWTAuthMiddleware, hostOnlyMiddleware, async (req, res, next) => {
   try {
     const userId = req.params.userID;
     const modifiedUser = await UserModel.findByIdAndUpdate(userId, req.body, {
@@ -99,7 +99,7 @@ userRouter.put("/:userID", async (req, res, next) => {
   }
 });
 
-userRouter.delete("/:userID", async (req, res, next) => {
+userRouter.delete("/:userID", JWTAuthMiddleware, hostOnlyMiddleware, async (req, res, next) => {
   try {
     const userId = req.params.userID;
     const deletedUser = await UserModel.findByIdAndDelete(userId);
@@ -113,6 +113,15 @@ userRouter.delete("/:userID", async (req, res, next) => {
     next(error);
   }
 });
+userRouter.post("/refreshToken", async (req, res, next) => {
+  try {
+    const { currentRefreshToken } = req.body
+    const { accessToken, refreshToken } = await verifyRefreshAndGenerateTokens(currentRefreshToken)
+    res.send({ accessToken, refreshToken })
+  } catch (error) {
+    next(error)
+  }
+})
 
 
 

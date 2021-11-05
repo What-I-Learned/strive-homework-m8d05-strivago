@@ -27,7 +27,7 @@ const { PORT = 3009 } = process.env;
 server.use(cors());
 server.use(express.json());
 
-server.use("/users", userRouter)
+
 
 // SERVICES
 server.use("/accomodation", accomodationRouter);

@@ -3,7 +3,7 @@ import createHttpError from "http-errors"
 import UserModel from "../services/users/schema.js"
 
 export const JWTAuthenticate = async user => {
-    const accessToken = await generateJWT({ _id: user._id })
+    const accessToken = await generateJWT({ _id: user.id_id })
     const refreshToken = await generateRefreshJWT({ _id: user._id })
 
     user.refreshToken = refreshToken

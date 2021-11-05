@@ -70,7 +70,7 @@ userRouter.post("/login", async (req, res, next) => {
       const accessToken = await JWTAuthenticate(user)
 
 
-      res.send({ accessToken, refreshToken })
+      res.send({ accessToken })
     } else {
       next(createHttpError(401, "Credentials are not correct!"))
     }

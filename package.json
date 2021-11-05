@@ -1,7 +1,7 @@
 {
 	"name": "strive-homework-m8d05-strivago",
 	"version": "1.0.0",
-	"description": "",
+	"type": "module",
 	"main": "index.js",
 	"dependencies": {
 		"atob": "^2.1.2",
@@ -22,7 +22,8 @@
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "nodemon -r dotenv/config -e js ./src/server.js"
+		"dev": "nodemon -e js -r dotenv/config ./src/server.js",
+		"start": "node ./src/server.js"
 	},
 	"repository": {
 		"type": "git",
@@ -33,5 +34,7 @@
 	"bugs": {
 		"url": "https://github.com/What-I-Learned/strive-homework-m8d05-strivago/issues"
 	},
-	"homepage": "https://github.com/What-I-Learned/strive-homework-m8d05-strivago#readme"
+	"homepage": "https://github.com/What-I-Learned/strive-homework-m8d05-strivago#readme",
+	"keywords": [],
+	"description": ""
 }

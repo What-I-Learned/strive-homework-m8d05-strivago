@@ -5,6 +5,18 @@ import UserModel from "./schema.js";
 
 const userRouter = express.Router();
 
+
+
+userRouter.post("/", async (req, res, next) => {
+    try {
+      const user = new UserModel(req.body);
+      const { _id } = await user.save();
+      res.send({ _id });
+    } catch (error) {
+      next(error);
+    }
+  });
+
 userRouter.get("/", async (req, res, next) => {
   try {
     const users = await UserModel.find();
@@ -28,15 +40,46 @@ userRouter.get("/:userID", async (req, res, next) => {
   }
 });
 
-userRouter.post("/", async (req, res, next) => {
-  try {
-    const user = new UserModel(req.body);
-    const { _id } = await user.save();
-    res.send({ _id });
-  } catch (error) {
-    next(error);
-  }
-});
+
+
+
+
+userRouter.post("/register", async (req, res, next) => {
+    try {
+      const user = new UserModel(req.body);
+      const { _id } = await user.save();
+      res.send({ _id });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+
+
+  userRouter.post("/login", async (req, res, next) => {
+    try {
+      
+      const { email, password } = req.body
+  
+    
+      const user = await UserModel.checkCredentials(email, password)
+  
+      if (user) {
+      
+        const accessToken = await JWTAuthenticate(user)
+  
+        
+        res.send({ accessToken })
+      } else {
+        next(createHttpError(401, "Credentials are not correct!"))
+      }
+    } catch (error) {
+      next(error)
+    }
+  })
+
+
+
 
 userRouter.put("/:userID",  async (req, res, next) => {
   try {

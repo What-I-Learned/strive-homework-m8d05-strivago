@@ -1,14 +1,16 @@
 import express from "express";
 import AccomodationModel from "./schema.js";
-import { hostOnlyMiddleware } from "../../auth/host.js"
-import { JWTAuthMiddleware } from "../../auth/token.js"
+import { hostOnlyMiddleware } from "../../auth/host.js";
+import { JWTAuthMiddleware } from "../../auth/token.js";
+import { isAccomodationOwner } from "../../auth/owner.js";
+import createHttpError from "http-errors";
 const accomodationRouter = express.Router();
 
-accomodationRouter.get("/", async (req, res, next) => {
+accomodationRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const accomodations = await AccomodationModel.find().populate({
       path: "host",
-      select: "name",
+      select: "email",
     });
 
     res.send(accomodations);
@@ -17,9 +19,14 @@ accomodationRouter.get("/", async (req, res, next) => {
   }
 });
 
-accomodationRouter.get("/:id", hostOnlyMiddleware, async (req, res, next) => {
+accomodationRouter.get("/:id", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const accomodation = await AccomodationModel.findById(req.params.id);
+    const accomodation = await AccomodationModel.findById(
+      req.params.id
+    ).populate({
+      path: "host",
+      select: "email",
+    });
     if (accomodation) {
       res.send(post);
     } else {
@@ -32,38 +39,52 @@ accomodationRouter.get("/:id", hostOnlyMiddleware, async (req, res, next) => {
 
 // HOST ONLY
 
-accomodationRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
-  try {
-    console.log(req.user)
-    // req.body.host = req.user;
-    // console.log(req.user);
-    // const newAccomodation = new AccomodationModel(req.body);
-    // await newAccomodation.save();
-    // res.status(201).send(newAccomodation);
-  } catch (err) {
-    next(err);
-  }
-});
+accomodationRouter.post(
+  "/",
+  JWTAuthMiddleware,
+  hostOnlyMiddleware,
+  async (req, res, next) => {
+    try {
+      req.body.host = req.user;
 
-accomodationRouter.put("/:id", hostOnlyMiddleware, async (req, res, next) => {
-  try {
-    const modifiedAccomodation = await AccomodationModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    res.send(modifiedAccomodation);
-  } catch (err) {
-    next(err);
+      const newAccomodation = new AccomodationModel(req.body);
+      await newAccomodation.save();
+      res.status(201).send(newAccomodation);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
-accomodationRouter.delete("/:id", hostOnlyMiddleware, async (req, res, next) => {
-  try {
-    await AccomodationModel.findByIdAndDelete(req.params.id);
-    res.send("deleted");
-  } catch (err) {
-    next(err);
+accomodationRouter.put(
+  "/:id",
+  JWTAuthMiddleware,
+  hostOnlyMiddleware,
+  isAccomodationOwner,
+  async (req, res, next) => {
+    try {
+      await AccomodationModel.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+      res.send(`accomodation with id ${req.params.id} has been changed`);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
+
+accomodationRouter.delete(
+  "/:id",
+  JWTAuthMiddleware,
+  hostOnlyMiddleware,
+  isAccomodationOwner,
+  async (req, res, next) => {
+    try {
+      await AccomodationModel.findByIdAndDelete(req.params.id);
+      res.send("deleted");
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 export default accomodationRouter;

@@ -65,6 +65,7 @@ userRouter.put("/me", JWTAuthMiddleware, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+
 });
 
 userRouter.post("/forgot-password", async (req, res, next) => {
@@ -194,6 +195,7 @@ userRouter.post("/register", async (req, res, next) => {
   }
 });
 
+
 userRouter.put(
   "/:userID",
   JWTAuthMiddleware,
@@ -235,6 +237,7 @@ userRouter.delete(
     }
   }
 );
+
 userRouter.post("/refreshToken", async (req, res, next) => {
   try {
     const { currentRefreshToken } = req.body;
@@ -265,5 +268,7 @@ userRouter.get(
     }
   }
 );
+
+
 
 export default userRouter;

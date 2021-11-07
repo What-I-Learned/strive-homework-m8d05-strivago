@@ -4,7 +4,11 @@ const { Schema, model } = mongoose;
 
 const userSchema = new Schema(
   {
-    email: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      unique: [true, "Such email already exists"],
+    },
     password: { type: String },
     role: { type: String, default: "Guest", enum: ["Guest", "Host"] },
     accessToken: { type: String },
